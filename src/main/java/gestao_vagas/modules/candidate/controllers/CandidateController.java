@@ -1,6 +1,7 @@
 package gestao_vagas.modules.candidate.controllers;
 
 import gestao_vagas.modules.candidate.CandidateEntity;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class CandidateController {
 
     @PostMapping("/")
-    public void create(@RequestBody CandidateEntity candidateEntity) {
+    public void create(@Valid @RequestBody CandidateEntity candidateEntity) {
         System.out.println("Candidato");
         System.out.println("Candidato " + candidateEntity.getName());
     }
