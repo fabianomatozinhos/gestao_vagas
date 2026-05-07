@@ -28,9 +28,10 @@ public class JobEntity {
     private String level;
     private String benefits;
 
-    @ManyToOne()
-    @JoinColumn(name = "company_id")
+    @ManyToOne
+    @JoinColumn(name = "company_id", nullable = false)
     private CompanyEntity companyEntity;
+
 
     @CreationTimestamp
     private LocalDateTime createdAt;

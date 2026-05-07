@@ -1,5 +1,6 @@
 package gestao_vagas.modules.company.controllers;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -8,8 +9,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import gestao_vagas.modules.company.entities.JobEntity;
+import gestao_vagas.modules.company.repositories.CompanyRepository;
 import gestao_vagas.modules.company.useCases.CreateJobyUseCase;
 import jakarta.validation.Valid;
+
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/job")
@@ -18,9 +22,19 @@ public class JobController {
     @Autowired
     private CreateJobyUseCase createJobyUseCase;
 
+    @Autowired
+    private CompanyRepository companyRepository;
+
     @PostMapping("/")
-    public ResponseEntity<Object> create (@Valid @RequestBody JobEntity jobEntity){
+    public ResponseEntity<Object> create (@Valid @RequestBody JobEntity jobEntity, HttpServletRequest request) {
         try {
+            var companyId = request.getAttribute("company_id");
+
+            var company = this.companyRepository.findById(UUID.fromString(companyId.toString()))
+                    .orElseThrow(() -> new RuntimeException("Company not found"));
+
+            jobEntity.setCompanyEntity(company);
+
             var result = this.createJobyUseCase.execute(jobEntity);
             return ResponseEntity.ok(result);
         } catch (Exception e) {
