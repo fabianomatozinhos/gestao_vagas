@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import gestao_vagas.modules.company.dto.CreateJobDTO;
 import gestao_vagas.modules.company.entities.JobEntity;
 import gestao_vagas.modules.company.repositories.CompanyRepository;
 import gestao_vagas.modules.company.useCases.CreateJobyUseCase;
@@ -26,14 +27,23 @@ public class JobController {
     private CompanyRepository companyRepository;
 
     @PostMapping("/")
-    public ResponseEntity<Object> create (@Valid @RequestBody JobEntity jobEntity, HttpServletRequest request) {
+    public ResponseEntity<Object> create (@Valid @RequestBody CreateJobDTO createJobDTO, HttpServletRequest request) {
         try {
             var companyId = request.getAttribute("company_id");
 
             var company = this.companyRepository.findById(UUID.fromString(companyId.toString()))
                     .orElseThrow(() -> new RuntimeException("Company not found"));
 
-            jobEntity.setCompanyEntity(company);
+            
+            // jobEntity.setCompanyEntity(company);
+
+            JobEntity jobEntity = JobEntity.builder()
+                .benefits(createJobDTO.getBenefits())
+                .description(createJobDTO.getDescription())
+                .companyEntity(company)
+                .level(createJobDTO.getLevel())
+                .build();
+
 
             var result = this.createJobyUseCase.execute(jobEntity);
             return ResponseEntity.ok(result);
