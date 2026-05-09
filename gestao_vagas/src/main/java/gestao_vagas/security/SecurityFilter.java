@@ -32,16 +32,22 @@ public class SecurityFilter extends OncePerRequestFilter {
         if (request.getRequestURI().startsWith("/company")) {
             
             if (header != null) {
-                var subjectToken = this.jwtProvider.validateToken(header);
-                if (subjectToken.isEmpty()) {
+                var token = this.jwtProvider.validateToken(header);
+                if (token == null) {
                     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                     return;
                 }
 
-                request.setAttribute("company_id", subjectToken);
+                request.setAttribute("company_id", token.getSubject());
+
+                var roles = token.getClaim("roles").asList(String.class);
+
+                var grants = roles.stream().map(
+                        role -> new SimpleGrantedAuthority("ROLE_" + role.toUpperCase())
+                ).toList();
 
                 UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
-                        subjectToken, null, Collections.singletonList(new SimpleGrantedAuthority("ROLE_COMPANY"))
+                        token.getSubject(), null, grants
                 );
 
                 SecurityContextHolder.getContext().setAuthentication(auth);

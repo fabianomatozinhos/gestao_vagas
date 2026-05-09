@@ -3,6 +3,7 @@ package gestao_vagas.modules.company.controllers;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,7 +18,7 @@ import jakarta.validation.Valid;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/job")
+@RequestMapping("/company/job")
 public class JobController {
 
     @Autowired
@@ -27,6 +28,7 @@ public class JobController {
     private CompanyRepository companyRepository;
 
     @PostMapping("/")
+    @PreAuthorize("hasRole('COMPANY')") // Somente empresas autenticadas podem acessar este endpoint
     public ResponseEntity<Object> create (@Valid @RequestBody CreateJobDTO createJobDTO, HttpServletRequest request) {
         try {
             var companyId = request.getAttribute("company_id");
