@@ -1,5 +1,7 @@
 package gestao_vagas.modules.candidate.entities;
 
+
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -20,6 +22,8 @@ public class CandidateEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
+
+    @Schema(example = "Jose maria", requiredMode = Schema.RequiredMode.REQUIRED, description = "Nome do candidato")
     private String name;
 
     @Pattern(regexp = "\\S+", message = "O campo de username não deve conter espaço")
@@ -29,6 +33,7 @@ public class CandidateEntity {
     private String email;
 
     @Length(min = 6, max = 100, message = "A senha deve conter entre 6 a 100 caracteres")
+    @Schema(example = "admins@123", minLength = 10, maxLength = 100, requiredMode = Schema.RequiredMode.REQUIRED, description = "Senha do candidato")
     private String password;
     private String description;
     private String curriculum;
