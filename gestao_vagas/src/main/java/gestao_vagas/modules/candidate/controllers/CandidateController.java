@@ -2,6 +2,7 @@ package gestao_vagas.modules.candidate.controllers;
 
 import gestao_vagas.modules.candidate.dto.ProfileCandidateResponseDTO;
 import gestao_vagas.modules.candidate.entities.CandidateEntity;
+import gestao_vagas.modules.candidate.useCases.ApplyJobCandidateUseCase;
 import gestao_vagas.modules.candidate.useCases.CreateCandidateUseCase;
 import gestao_vagas.modules.candidate.useCases.ListAllJobsByFilteruseCase;
 import gestao_vagas.modules.candidate.useCases.ProfileCandidateUseCase;
@@ -39,6 +40,9 @@ public class CandidateController {
 
     @Autowired
     private ListAllJobsByFilteruseCase listAllJobsByFilteruseCase;
+
+    @Autowired
+    private ApplyJobCandidateUseCase applyJobCandidateUseCase;
 
     @PostMapping("/")
     @Operation(summary = "Cadastro de Candidato", description = "Essa função é responsável por criar um novo candidato")
@@ -82,12 +86,12 @@ public class CandidateController {
     @GetMapping("/job")
     @PreAuthorize("hasRole('CANDIDATE')")
     @Operation(summary = "Listagem de vagas disponível para o candidato", description = "Essa função é responsável por listar todoas as vagas diponiveis filtradas pelo filtro")
+    @SecurityRequirement(name = "jwt_auth")
     @ApiResponses({
             @ApiResponse(responseCode = "200", content = {
                     @Content(array = @ArraySchema(schema = @Schema(implementation = JobEntity.class)) )
             })
     })
-    @SecurityRequirement(name = "jwt_auth")
     public List<JobEntity> get(@RequestParam String filter) {
         try {
 
@@ -96,6 +100,26 @@ public class CandidateController {
 
         } catch (Exception e) {
             return null;
+        }
+    }
+
+    @PostMapping("/job/apply")
+    @PreAuthorize("hasRole('CANDIDATE')")
+    @SecurityRequirement(name = "jwt_auth")
+    @Operation(summary = "Inscrição do candidato para uma vaga", description = "Essa função é responsável por realizar a inscrição do candidato em uma vaga")
+    public ResponseEntity<Object> applyJob (HttpServletRequest request, @RequestBody UUID idJob ) {
+
+        var IdCandidate = request.getAttribute("candidate_id");
+
+        try {
+            var result = this.applyJobCandidateUseCase.execute(
+                    UUID.fromString(IdCandidate.toString()),
+                    idJob
+            );
+
+            return ResponseEntity.ok().body(result);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 }
