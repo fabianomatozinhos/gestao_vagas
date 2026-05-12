@@ -2,6 +2,7 @@ package gestao_vagas.modules.candidate.useCases;
 
 import java.util.UUID;
 
+import gestao_vagas.exceptions.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -20,7 +21,7 @@ public class ProfileCandidateUseCase {
         
         var candidate = this.candidateRepository.findById(IdCandidate)
                 .orElseThrow(() -> {
-                    throw new UsernameNotFoundException("Candidate not found");
+                    throw new UserNotFoundException();
                 });
         
         var profileCandidateDTO = ProfileCandidateResponseDTO.builder()
