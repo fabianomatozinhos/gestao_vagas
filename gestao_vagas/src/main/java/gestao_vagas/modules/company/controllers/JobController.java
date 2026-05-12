@@ -48,19 +48,19 @@ public class JobController {
             var company = this.companyRepository.findById(UUID.fromString(companyId.toString()))
                     .orElseThrow(() -> new RuntimeException("Company not found"));
 
-            
             // jobEntity.setCompanyEntity(company);
 
             JobEntity jobEntity = JobEntity.builder()
-                .benefits(createJobDTO.getBenefits())
-                .description(createJobDTO.getDescription())
-                .companyEntity(company)
-                .level(createJobDTO.getLevel())
-                .build();
+                    .benefits(createJobDTO.getBenefits())
+                    .description(createJobDTO.getDescription())
+                    .companyEntity(company)
+                    .level(createJobDTO.getLevel())
+                    .build();
 
 
             var result = this.createJobyUseCase.execute(jobEntity);
             return ResponseEntity.ok(result);
+
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
